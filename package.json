@@ -1,0 +1,55 @@
+{
+  "name": "ecommerce-server",
+  "version": "1.0.0",
+  "description": "Ecommerce backend server powered by Express",
+  "main": "index.ts",
+  "type": "commonjs",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
+    "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --coverage"
+  },
+  "keywords": [
+    "express",
+    "backend",
+    "server",
+    "ecommerce",
+    "api",
+    "endpoints",
+    "databases"
+  ],
+  "author": "Marcos Iorio",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^4.7.1",
+    "@types/mongoose": "^5.11.97",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^8.5.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.14",
+    "@types/jest": "^29.2.4",
+    "@types/node": "^18.11.11",
+    "@types/supertest": "^2.0.12",
+    "@typescript-eslint/eslint-plugin": "^5.45.1",
+    "@typescript-eslint/parser": "^5.45.1",
+    "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.29.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "jest": "^29.3.1",
+    "jest-mock-extended": "^3.0.1",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.1",
+    "prisma": "^4.7.1",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.3"
+  }
+}
