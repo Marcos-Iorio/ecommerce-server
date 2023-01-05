@@ -1,12 +1,18 @@
 import { PrismaClient } from "@prisma/client";
+import { Product } from "../models/productModel";
 
 export interface IProduct {
   name: string;
   description: string;
+  category: string;
   stock: number;
   price: number;
   main_image: string;
   images: Array<string>;
+}
+
+interface UpdateProduct extends Omit<IProduct, "main_image" | "images"> {
+  id?: string;
 }
 
 const prisma = new PrismaClient();
@@ -17,7 +23,7 @@ export const getAllProducts = async (pageNumber: number) => {
   let itemsPerPage = 25 * pageNumber;
 
   try {
-    const products = await prisma.product.findMany({
+    const products = await prisma.products.findMany({
       skip: 0,
       take: itemsPerPage,
     });
@@ -38,7 +44,7 @@ export const getProductInfo = async (id: string) => {
   await prisma.$connect();
 
   try {
-    const productData = await prisma.product.findFirst({
+    const productData = await prisma.products.findFirst({
       where: {
         id: id,
       },
@@ -59,21 +65,21 @@ export const insertNewProduct = async (product: IProduct) => {
   await prisma.$connect();
 
   try {
-    const checkProduct = await prisma.product.findFirst({
+    const checkProduct = await prisma.products.findFirst({
       where: {
         name: product.name,
       },
     });
 
     if (checkProduct !== null) {
-      prisma.$disconnect();
       throw new Error("Product already exists!");
     }
 
-    const productData = await prisma.product.create({
+    const productData = await prisma.products.create({
       data: {
         name: product.name,
         description: product.description,
+        category: product.category,
         main_image: product.main_image,
         images: product.images,
         stock: product.stock,
@@ -87,7 +93,57 @@ export const insertNewProduct = async (product: IProduct) => {
       };
     }
   } catch (error: any) {
-    prisma.$disconnect();
     return { message: error.message };
+  }
+};
+
+export const updateProduct = async (product: UpdateProduct) => {
+  await prisma.$connect();
+
+  try {
+    const updatedProduct = await prisma.products.update({
+      where: {
+        id: product.id,
+      },
+      data: {
+        name: product.name,
+        description: product.description,
+        category: product.category,
+        stock: product.stock,
+        price: product.price,
+      },
+    });
+
+    if (updatedProduct === null) {
+      throw new Error("Product doesn't exists");
+    }
+
+    return { message: `${product.name} updated successfully!` };
+  } catch (error: any) {
+    return { message: error.message };
+  }
+};
+
+export const deleteProduct = async (id: string) => {
+  await prisma.$connect();
+
+  try {
+    const deletedProduct = await prisma.products.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    if (deletedProduct === null) {
+      throw new Error("An error has ocurred! The product cannot be deleted!");
+    }
+
+    return {
+      message: "Product has been deleted!",
+    };
+  } catch (error: any) {
+    return {
+      message: error.message,
+    };
   }
 };

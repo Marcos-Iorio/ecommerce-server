@@ -13,24 +13,35 @@ enum Role {
 }
 
 model users {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
   city     String
   role     Role
   country  String
-  mail     String @unique
+  mail     String   @unique
   name     String
   password String
   street   String
+  orders   orders[]
 }
 
-model product {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  name String
+model products {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  category    String
+  name        String
   description String
-  main_image String
-  images String[]
-  stock Int
-  price Int
+  main_image  String
+  images      String[]
+  stock       Int
+  price       Int
 }
 
-
+model orders {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  user_name   String
+  mail        String
+  products    String[]
+  total_price Int
+  orderAt     DateTime
+  address     String
+  user        users    @relation(fields: [mail], references: [mail])
+}

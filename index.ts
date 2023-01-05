@@ -12,8 +12,8 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use("api/users", userRoutes);
-app.use("api/products", productRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/products", productRoutes);
 
 app.listen(port, () => {
   console.log("Server running at 3000");

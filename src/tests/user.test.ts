@@ -1,27 +1,31 @@
-import request from "supertest";
-import app from "../../index";
-import dotenv from "dotenv";
+import { MockContext, Context, createMockContext } from "./context";
+import { createUser, getUser } from "./user-functions";
 
-import { PrismaClient } from "@prisma/client";
-dotenv.config();
+import { users } from "@prisma/client";
 
-const prisma = new PrismaClient();
+let mockCtx: MockContext;
+let ctx: Context;
 
 beforeEach(() => {
-  prisma.$connect();
+  mockCtx = createMockContext();
+  ctx = mockCtx as unknown as Context;
 });
 
 describe("POST /users/login", () => {
   test("should return successfull text", async () => {
-    const testUser = {
+    const testUser: users = {
+      id: "1",
+      name: "marcos",
       mail: "marcos@test.com",
       password: "123",
+      country: "argentina",
+      city: "avellaneda",
+      street: "street123",
+      role: "USER",
     };
+    mockCtx.prisma.users.findFirst.mockResolvedValue(testUser);
 
-    const response = await request(app).post("/users/login").send(testUser);
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({
+    await expect(getUser(testUser, ctx)).resolves.toEqual({
       user: {
         id: expect.anything(),
         mail: "marcos@test.com",
@@ -34,30 +38,41 @@ describe("POST /users/login", () => {
   });
 
   test("should return invalid password", async () => {
-    const testUser = {
+    const testUser: users = {
+      id: "1",
+      name: "marcos",
       mail: "marcos@test.com",
-      password: "1234",
+      password: "123",
+      country: "argentina",
+      city: "avellaneda",
+      street: "street123",
+      role: "USER",
     };
+    mockCtx.prisma.users.findFirst.mockRejectedValue(
+      new Error("Invalid password!")
+    );
 
-    const response = await request(app).post("/users/login").send(testUser);
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({
-      accessToken: null,
+    await expect(getUser(testUser, ctx)).resolves.toEqual({
       message: "Invalid password!",
+      accessToken: null,
     });
   });
 
   test("should return no user found", async () => {
-    const testUser = {
-      mail: "marcostest@test.com",
-      password: "1234",
+    const testUser: users = {
+      id: "1",
+      name: "marcos",
+      mail: "marcos@test.com",
+      password: "123",
+      country: "argentina",
+      city: "avellaneda",
+      street: "street123",
+      role: "USER",
     };
-
-    const response = await request(app).post("api/users/login").send(testUser);
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({
+    mockCtx.prisma.users.findFirst.mockRejectedValue(
+      new Error("No user found!")
+    );
+    await expect(getUser(testUser, ctx)).resolves.toEqual({
       accessToken: null,
       message: "No user found!",
     });
@@ -66,38 +81,45 @@ describe("POST /users/login", () => {
 
 describe("POST users/register", () => {
   test("should register the user", async () => {
-    const testUser = {
-      mail: "mateo1@test.com",
-      password: "1234",
-      name: "mateo",
-      country: "Argentina",
-      city: "CABA",
-      street: "street 123",
+    const testCreateUser: users = {
+      id: "1",
+      name: "marcos",
+      mail: "marcos1124324@test.com",
+      password: "123",
+      country: "argentina",
+      city: "avellaneda",
+      street: "street123",
+      role: "USER",
     };
+    const userExists = false;
 
-    const response = await request(app).post("/users/register").send(testUser);
+    mockCtx.prisma.users.create.mockResolvedValue(testCreateUser);
 
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
+    await expect(createUser(testCreateUser, userExists, ctx)).resolves.toEqual({
       message: "Account created!",
     });
   });
 
   test("should return email already registered", async () => {
-    const testUser = {
-      mail: "marcos@test.com",
-      password: "1234",
+    const testCreateUser = {
+      id: "1",
       name: "marcos",
-      country: "Argentina",
-      city: "CABA",
-      street: "street 123",
+      mail: "marcos@test.com",
+      password: "123",
+      country: "argentina",
+      city: "avellaneda",
+      street: "street123",
+      role: "USER",
     };
 
-    const response = await request(app).post("/users/register").send(testUser);
+    const userExists = true;
 
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      message: "Email already registered!",
-    });
+    mockCtx.prisma.users.create.mockRejectedValue(
+      new Error("Email already registered!")
+    );
+
+    await expect(createUser(testCreateUser, userExists, ctx)).resolves.toEqual(
+      new Error("Email already registered!")
+    );
   });
 });
