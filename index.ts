@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", ordersRoutes);
-app.use("/payments", paymentsRoutes);
+app.use("/api/payments", paymentsRoutes);
 
 app.listen(port, () => {
   console.log("Server running at 3000");

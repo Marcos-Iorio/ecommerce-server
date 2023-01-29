@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import axios from "axios";
-
-import { IProduct } from "../repositories/product";
+const mercadopago = require("mercadopago");
 
 dotenv.config();
 
@@ -17,10 +16,11 @@ interface IBuyerInfo {
 }
 
 interface IProductInfo {
+  id: string;
   title: string;
   description: string;
   quantity: number;
-  price: string;
+  unit_price: number;
   category: string;
 }
 
@@ -28,74 +28,43 @@ interface IProducts {
   products: Array<IProductInfo>;
 }
 
-const tokenMercadoPago = {
-  prod: {},
-  test: {
-    access_token: process.env.MELI_ACCESS_TOKEN,
-  },
-};
+mercadopago.configure({
+  access_token: process.env.MELI_ACCESS_TOKEN,
+});
 
-const mercadoPagoUrl = "https://api.mercadopago.com/checkout";
-
-const createPaymentMercadoPago = async (
-  { products }: IProducts,
-  user: IBuyerInfo
-) => {
-  const url = `${mercadoPagoUrl}/preferences?access_token=${tokenMercadoPago.test.access_token}`;
-
+const createPaymentMercadoPago = async (products: any) => {
   const items: any = [];
 
   products.forEach((product: IProductInfo) => {
     const item: IProductInfo = {
+      id: "",
       title: "",
       description: "",
       quantity: 0,
-      price: "",
+      unit_price: 0,
       category: "",
     };
 
+    item.id = product.id;
     item.title = product.title;
-    item.description = product.title;
+    item.description = product.description;
     item.category = product.category;
-    item.price = product.price;
+    item.unit_price = Number(product.unit_price);
     item.quantity = Number(product.quantity);
 
     items.push(item);
   });
 
+  console.log(items);
+
   const preferences = {
     items,
-    external_reference: "ecommerce",
-    payer: {
-      name: user.name,
-      email: user.email,
-      address: {
-        street: user.address.street_name,
-        zip_code: user.address.zip_code,
-        country: user.address.country,
-        city: user.address.city,
-      },
-    },
-    back_urls: {
-      success: "https://localhost:3000/success",
-      pending: "https://localhost:3000.com/pending",
-      failure: "https://localhost:3000.com/error",
-    },
-    notification_url: "https://localhost:3000/webhook",
-    auto_return: "approved",
   };
 
-  try {
-    const request = await axios.post(url, preferences, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  const response = await mercadopago.preferences.create(preferences);
+  const preferenceId = response.body.id;
 
-    return request.data;
-  } catch (e) {
-    console.log(e);
-  }
+  return preferenceId;
 };
 
 export default createPaymentMercadoPago;

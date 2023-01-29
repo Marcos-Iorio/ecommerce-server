@@ -30,5 +30,17 @@ class Product {
             return response;
         });
     }
+    update(product) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield (0, product_1.updateProduct)(product);
+            return response;
+        });
+    }
+    delete(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield (0, product_1.deleteProduct)(id);
+            return response;
+        });
+    }
 }
 exports.Product = Product;

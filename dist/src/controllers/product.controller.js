@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.newProduct = exports.getProductInfo = exports.allProducts = void 0;
+exports.deleteProduct = exports.updateProduct = exports.newProduct = exports.getProductInfo = exports.allProducts = void 0;
 const productModel_1 = require("../models/productModel");
 const uploadImages_1 = require("../services/uploadImages");
 const allProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,3 +42,24 @@ const newProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     res.status(200).send(response);
 });
 exports.newProduct = newProduct;
+const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const product = new productModel_1.Product();
+    const updatedProduct = {
+        id: req.body.id,
+        name: req.body.name,
+        description: req.body.description,
+        category: req.body.category,
+        stock: req.body.stock,
+        price: req.body.price,
+    };
+    const response = yield product.update(updatedProduct);
+    res.status(200).send(response);
+});
+exports.updateProduct = updateProduct;
+const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const product = new productModel_1.Product();
+    const { id } = req.body;
+    const response = yield product.delete(id);
+    res.status(200).send(response);
+});
+exports.deleteProduct = deleteProduct;

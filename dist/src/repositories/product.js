@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.insertNewProduct = exports.getProductInfo = exports.getAllProducts = void 0;
+exports.deleteProduct = exports.updateProduct = exports.insertNewProduct = exports.getProductInfo = exports.getAllProducts = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const getAllProducts = (pageNumber) => __awaiter(void 0, void 0, void 0, function* () {
@@ -85,3 +85,50 @@ const insertNewProduct = (product) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.insertNewProduct = insertNewProduct;
+const updateProduct = (product) => __awaiter(void 0, void 0, void 0, function* () {
+    yield prisma.$connect();
+    try {
+        const updatedProduct = yield prisma.products.update({
+            where: {
+                id: product.id,
+            },
+            data: {
+                name: product.name,
+                description: product.description,
+                category: product.category,
+                stock: product.stock,
+                price: product.price,
+            },
+        });
+        if (updatedProduct === null) {
+            throw new Error("Product doesn't exists");
+        }
+        return { message: `${product.name} updated successfully!` };
+    }
+    catch (error) {
+        return { message: error.message };
+    }
+});
+exports.updateProduct = updateProduct;
+const deleteProduct = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    yield prisma.$connect();
+    try {
+        const deletedProduct = yield prisma.products.delete({
+            where: {
+                id: id,
+            },
+        });
+        if (deletedProduct === null) {
+            throw new Error("An error has ocurred! The product cannot be deleted!");
+        }
+        return {
+            message: "Product has been deleted!",
+        };
+    }
+    catch (error) {
+        return {
+            message: error.message,
+        };
+    }
+});
+exports.deleteProduct = deleteProduct;
