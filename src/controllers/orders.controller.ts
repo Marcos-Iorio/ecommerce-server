@@ -7,6 +7,7 @@ export interface IOrders {
   products: string[];
   buyer: string;
   total: string;
+  status: string;
   adress_to_ship: string;
   timestamp: string;
 }
@@ -21,7 +22,7 @@ const allOrders = async (req: Request, res: Response) => {
 const newOrder = async (req: Request, res: Response) => {
   const orders = new Orders();
 
-  const response = await orders.order();
+  const response = await orders.new_order();
   return res.status(200).send(response);
 };
 

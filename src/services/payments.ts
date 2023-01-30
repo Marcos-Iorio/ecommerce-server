@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import axios from "axios";
 const mercadopago = require("mercadopago");
 
 dotenv.config();

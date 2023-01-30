@@ -3,7 +3,7 @@ class Orders {
     return "";
   }
 
-  async order() {
+  async new_order() {
     return "";
   }
 }

@@ -17,7 +17,7 @@ model users {
   city     String
   role     Role
   country  String
-  mail     String   @unique
+  email     String   @unique
   name     String
   password String
   street   String
@@ -37,11 +37,19 @@ model products {
 
 model orders {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  order_id String
   user_name   String
-  mail        String
+  email        String
   products    String[]
   total_price Int
-  orderAt     DateTime
+  order_timestamp     DateTime
+  status OrderStatus @default(PENDING)
   address     String
-  user        users    @relation(fields: [mail], references: [mail])
+  user        users    @relation(fields: [email], references: [email])
+}
+
+enum OrderStatus {
+  PENDING
+  APPROVED
+  CANCELED
 }
