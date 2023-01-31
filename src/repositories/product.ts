@@ -1,19 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { Product } from "../models/productModel";
-
-export interface IProduct {
-  name: string;
-  description: string;
-  category: string;
-  stock: number;
-  price: number;
-  main_image: string;
-  images: Array<string>;
-}
-
-interface UpdateProduct extends Omit<IProduct, "main_image" | "images"> {
-  id?: string;
-}
+import { IProduct, UpdateProduct, IUpdateStock } from "../types";
 
 const prisma = new PrismaClient();
 
@@ -146,4 +132,33 @@ export const deleteProduct = async (id: string) => {
       message: error.message,
     };
   }
+};
+
+export const updateStock = async (products: IUpdateStock[]) => {
+  prisma.$connect();
+
+  products.forEach(async (product: IUpdateStock) => {
+    try {
+      const checkProduct = await prisma.products.findFirst({
+        where: {
+          id: product.id,
+        },
+      });
+
+      if (checkProduct === null) {
+        throw new Error("No product was found!");
+      }
+
+      const updatedOrder = await prisma.products.update({
+        where: {
+          id: product.id,
+        },
+        data: {
+          stock: checkProduct.stock - product.quantity,
+        },
+      });
+    } catch (e: any) {
+      return { error: true, message: e.message };
+    }
+  });
 };

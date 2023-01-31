@@ -12,19 +12,19 @@ enum Role {
   USER
 }
 
-model users {
+model Users {
   id       String   @id @default(auto()) @map("_id") @db.ObjectId
   city     String
   role     Role
   country  String
-  email     String   @unique
+  email    String   @unique
   name     String
   password String
   street   String
-  orders   orders[]
+  orders   Orders[]
 }
 
-model products {
+model Products {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   category    String
   name        String
@@ -33,23 +33,19 @@ model products {
   images      String[]
   stock       Int
   price       Int
+  orders      Orders?  @relation(fields: [ordersId], references: [id])
+  ordersId    String?  @db.ObjectId
 }
 
-model orders {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  order_id String
-  user_name   String
-  email        String
-  products    String[]
-  total_price Int
-  order_timestamp     DateTime
-  status OrderStatus @default(PENDING)
-  address     String
-  user        users    @relation(fields: [email], references: [email])
-}
-
-enum OrderStatus {
-  PENDING
-  APPROVED
-  CANCELED
+model Orders {
+  id              String     @id @default(auto()) @map("_id") @db.ObjectId
+  order_id        String     @unique
+  user_name       String
+  email           String
+  products        Products[]
+  total_price     Int
+  order_timestamp DateTime
+  status          String
+  address         String
+  user            Users      @relation(fields: [email], references: [email])
 }

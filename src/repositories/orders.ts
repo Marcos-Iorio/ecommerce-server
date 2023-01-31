@@ -3,15 +3,7 @@ import { randomUUID } from "crypto";
 
 const prisma = new PrismaClient();
 
-interface Order {
-  user_name: string;
-  email: string;
-  products: string[];
-  total_price: number;
-  timestamp: Date;
-  status: string;
-  address: string;
-}
+import { IOrders } from "../types";
 
 const getAllOrders = async () => {
   prisma.$connect();
@@ -29,7 +21,7 @@ const getAllOrders = async () => {
   }
 };
 
-const createOrder = async (orderInfo: Order) => {
+const createOrder = async (orderInfo: IOrders) => {
   prisma.$connect();
 
   const orderId = randomUUID();
@@ -38,10 +30,10 @@ const createOrder = async (orderInfo: Order) => {
     const order = prisma.orders.create({
       data: {
         order_id: orderId,
-        user_name: orderInfo.user_name,
+        user_name: orderInfo.buyer,
         email: orderInfo.email,
         products: orderInfo.products,
-        total_price: orderInfo.total_price,
+        total: orderInfo.total,
         order_timestamp: new Date(),
         status: "PENDING",
         address: orderInfo.address,
@@ -53,6 +45,7 @@ const createOrder = async (orderInfo: Order) => {
     }
 
     return {
+      error: false,
       message: `Order ${orderId} was created successfully, we will send the details to your email. Once you pay is approved we will ship your order.`,
     };
   } catch (e: any) {
@@ -72,7 +65,38 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
         status: newStatus,
       },
     });
-  } catch (e: any) {}
+
+    if (updatedOrder === null) {
+      throw new Error("There was a problem updating the status of payment.");
+    }
+
+    return {
+      error: false,
+      message: `Status changed to ${newStatus}`,
+    };
+  } catch (e: any) {
+    return { error: true, message: e.message };
+  }
 };
 
-export { getAllOrders, createOrder };
+const getUserOrders = async (userEmail: string) => {
+  prisma.$connect();
+
+  try {
+    const orders = prisma.orders.findMany({
+      where: {
+        email: userEmail,
+      },
+    });
+
+    if (orders === null) {
+      throw new Error("No orders were found!");
+    }
+
+    return { error: false, orders: orders };
+  } catch (e: any) {
+    return { error: true, message: e.message };
+  }
+};
+
+export { getAllOrders, createOrder, updateOrderStatus, getUserOrders };

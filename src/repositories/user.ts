@@ -5,14 +5,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export interface IUser {
-  name: string;
-  mail: string;
-  password: string;
-  street: string;
-  city: string;
-  country: string;
-}
+import { IUser } from "../types";
 
 const prisma = new PrismaClient();
 
@@ -22,7 +15,7 @@ export const getUser = async (userData: IUser) => {
   try {
     const user = await prisma.users.findFirst({
       where: {
-        mail: userData.mail,
+        email: userData.mail,
       },
     });
     if (user === null) {
@@ -49,7 +42,7 @@ export const getUser = async (userData: IUser) => {
     return {
       user: {
         id: user.id,
-        mail: user.mail,
+        email: user.email,
         name: user.name,
         role: user.role,
       },
@@ -68,7 +61,7 @@ export const insertUser = async (userData: IUser) => {
   try {
     const checkUsedMail = await prisma.users.findFirst({
       where: {
-        mail: userData.mail,
+        email: userData.mail,
       },
     });
 
@@ -79,7 +72,7 @@ export const insertUser = async (userData: IUser) => {
       const user = await prisma.users.create({
         data: {
           name: userData.name,
-          mail: userData.mail,
+          email: userData.mail,
           role: "USER",
           password: userData.password,
           street: userData.street,
