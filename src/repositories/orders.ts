@@ -33,10 +33,14 @@ const createOrder = async (orderInfo: IOrders) => {
         user_name: orderInfo.buyer,
         email: orderInfo.email,
         products: orderInfo.products,
-        total: orderInfo.total,
+        total_price: Number(orderInfo.total),
         order_timestamp: new Date(),
-        status: "PENDING",
-        address: orderInfo.address,
+        payment_status: "PENDING",
+        address: {
+          street: orderInfo.street,
+          city: orderInfo.city,
+          country: orderInfo.country,
+        },
       },
     });
 
@@ -46,6 +50,7 @@ const createOrder = async (orderInfo: IOrders) => {
 
     return {
       error: false,
+      order_id: orderId,
       message: `Order ${orderId} was created successfully, we will send the details to your email. Once you pay is approved we will ship your order.`,
     };
   } catch (e: any) {
@@ -62,7 +67,7 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
         order_id: orderId,
       },
       data: {
-        status: newStatus,
+        payment_status: newStatus,
       },
     });
 
@@ -79,13 +84,13 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
   }
 };
 
-const getUserOrders = async (userEmail: string) => {
+const getUserOrders = async (orderId: string) => {
   prisma.$connect();
 
   try {
     const orders = prisma.orders.findMany({
       where: {
-        email: userEmail,
+        order_id: orderId,
       },
     });
 

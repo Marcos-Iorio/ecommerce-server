@@ -14,7 +14,9 @@ interface UpdateStock extends Omit<IOrders, "products"> {
 
 class Orders {
   async allOrders() {
-    return "";
+    const response = await getAllOrders();
+
+    return response;
   }
 
   async new_order(orderInfo: any) {
@@ -25,6 +27,18 @@ class Orders {
     if (!response.error) {
       updateStock(products);
     }
+  }
+
+  async updateOrderStatus(orderId: string, newStatus: string) {
+    const response = await updateOrderStatus(orderId, newStatus);
+
+    return response;
+  }
+
+  async userOrders(orderId: string) {
+    const response = await getUserOrders(orderId);
+
+    return response;
   }
 }
 

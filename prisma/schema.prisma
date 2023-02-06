@@ -33,19 +33,33 @@ model Products {
   images      String[]
   stock       Int
   price       Int
-  orders      Orders?  @relation(fields: [ordersId], references: [id])
-  ordersId    String?  @db.ObjectId
 }
 
 model Orders {
   id              String     @id @default(auto()) @map("_id") @db.ObjectId
-  order_id        String     @unique
+  order_id String @unique
   user_name       String
   email           String
-  products        Products[]
+  products        OrdersProducts[]
   total_price     Int
-  order_timestamp DateTime
-  status          String
-  address         String
+  order_timestamp DateTime @db.Date
+  payment_status  String
+  address         Address
   user            Users      @relation(fields: [email], references: [email])
+}
+
+type Address{
+  street String
+  city String
+  country String
+}
+
+type OrdersProducts {
+  category    String
+  description String
+  id          String @db.ObjectId
+  main_image  String
+  name        String
+  price       Float
+  quantity    Int
 }

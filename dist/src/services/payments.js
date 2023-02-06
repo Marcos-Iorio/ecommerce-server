@@ -37,7 +37,6 @@ const createPaymentMercadoPago = (products) => __awaiter(void 0, void 0, void 0,
         item.quantity = Number(product.quantity);
         items.push(item);
     });
-    console.log(items);
     const preferences = {
         items,
     };

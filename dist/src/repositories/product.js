@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProduct = exports.updateProduct = exports.insertNewProduct = exports.getProductInfo = exports.getAllProducts = void 0;
+exports.updateStock = exports.deleteProduct = exports.updateProduct = exports.insertNewProduct = exports.getProductInfo = exports.getAllProducts = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const getAllProducts = (pageNumber) => __awaiter(void 0, void 0, void 0, function* () {
@@ -132,3 +132,30 @@ const deleteProduct = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.deleteProduct = deleteProduct;
+const updateStock = (products) => __awaiter(void 0, void 0, void 0, function* () {
+    prisma.$connect();
+    products.forEach((product) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const checkProduct = yield prisma.products.findFirst({
+                where: {
+                    id: product.id,
+                },
+            });
+            if (checkProduct === null) {
+                throw new Error("No product was found!");
+            }
+            const updatedOrder = yield prisma.products.update({
+                where: {
+                    id: product.id,
+                },
+                data: {
+                    stock: checkProduct.stock - product.quantity,
+                },
+            });
+        }
+        catch (e) {
+            return { error: true, message: e.message };
+        }
+    }));
+});
+exports.updateStock = updateStock;

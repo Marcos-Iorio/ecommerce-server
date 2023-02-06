@@ -18,13 +18,20 @@ export interface IUpdateStock {
 }
 
 export interface IOrders {
+  city: any;
+  country: any;
+  street: any;
   order_number: string;
   products: IProduct[];
   buyer: string;
   email: string;
   total: string;
-  status: string;
-  address: string;
+  status: Status;
+  address: {
+    street: string;
+    city: string;
+    country: string;
+  };
   timestamp: string;
 }
 

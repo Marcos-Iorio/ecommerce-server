@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.newOrder = exports.allOrders = void 0;
+exports.getUserOrders = exports.updateOrder = exports.newOrder = exports.allOrders = void 0;
 const orders_model_1 = require("../models/orders.model");
 const allOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const orders = new orders_model_1.Orders();
@@ -19,7 +19,21 @@ const allOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.allOrders = allOrders;
 const newOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const orders = new orders_model_1.Orders();
-    const response = yield orders.order();
+    const response = yield orders.new_order(req.body);
     return res.status(200).send(response);
 });
 exports.newOrder = newOrder;
+const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const orders = new orders_model_1.Orders();
+    const { orderId, newStatus } = req.body;
+    const response = yield orders.updateOrderStatus(orderId, newStatus);
+    res.status(200).send(response);
+});
+exports.updateOrder = updateOrder;
+const getUserOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userEmail } = req.params;
+    const orders = new orders_model_1.Orders();
+    const response = yield orders.userOrders(userEmail);
+    res.status(200).send(response);
+});
+exports.getUserOrders = getUserOrders;

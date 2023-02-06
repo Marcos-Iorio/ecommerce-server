@@ -24,7 +24,7 @@ const getUser = (userData) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield prisma.users.findFirst({
             where: {
-                mail: userData.mail,
+                email: userData.mail,
             },
         });
         if (user === null) {
@@ -41,7 +41,7 @@ const getUser = (userData) => __awaiter(void 0, void 0, void 0, function* () {
         return {
             user: {
                 id: user.id,
-                mail: user.mail,
+                email: user.email,
                 name: user.name,
                 role: user.role,
             },
@@ -60,7 +60,7 @@ const insertUser = (userData) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const checkUsedMail = yield prisma.users.findFirst({
             where: {
-                mail: userData.mail,
+                email: userData.mail,
             },
         });
         if (checkUsedMail != null) {
@@ -71,7 +71,7 @@ const insertUser = (userData) => __awaiter(void 0, void 0, void 0, function* () 
             const user = yield prisma.users.create({
                 data: {
                     name: userData.name,
-                    mail: userData.mail,
+                    email: userData.mail,
                     role: "USER",
                     password: userData.password,
                     street: userData.street,

@@ -1,5 +1,5 @@
 import { getUser, insertUser } from "../repositories/user";
-import { IUser } from "../repositories/user";
+import { IUser } from "../types";
 
 class User {
   name: string;

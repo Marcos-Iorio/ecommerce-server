@@ -5,7 +5,8 @@ import {
   insertNewProduct,
   updateProduct,
 } from "../repositories/product";
-import { IProduct } from "../repositories/product";
+
+import { IProduct } from "../types";
 
 interface UpdateProduct {
   id?: string;

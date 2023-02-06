@@ -3,17 +3,6 @@ const mercadopago = require("mercadopago");
 
 dotenv.config();
 
-interface IBuyerInfo {
-  name: string;
-  email: string;
-  address: {
-    street_name: string;
-    zip_code: string;
-    country: string;
-    city: string;
-  };
-}
-
 interface IProductInfo {
   id: string;
   title: string;
@@ -53,8 +42,6 @@ const createPaymentMercadoPago = async (products: any) => {
 
     items.push(item);
   });
-
-  console.log(items);
 
   const preferences = {
     items,
